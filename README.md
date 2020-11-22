@@ -1,2 +1,2 @@
 # PY-100
-TIS-100 in python
+Emulador de TIS-100 en python
