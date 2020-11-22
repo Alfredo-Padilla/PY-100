@@ -8,7 +8,7 @@ screen = pg.display.set_mode((1900, 1060))
 class Ports:
 	CONT_A = None
 	CONT_B = None
-	def __init__(self, x, y, w, h, vert=True):
+	def __init__(self, x, y, w, h, vert=True, io_i=False, io_o=False, name=''):
 		self.x = x
 		self.y = y
 		self.w = w
@@ -20,6 +20,10 @@ class Ports:
 		self.arrow_b = pg.image.load('./img/arrow_sm.png')
 
 		self.vert = vert
+
+		self.name = CONST.FONT.render(name, True, CONST.COLOR_INACTIVE)
+		#if (io_i or io_o) and name:
+		#	self.name = CONST.FONT.render(name, True, CONST.COLOR_INACTIVE)
 
 
 
@@ -40,6 +44,9 @@ class Ports:
 			screen.blit(pg.transform.rotate(self.arrow_b, 90), (self.x, self.y+60))
 			if self.CONT_B != None:
 				screen.blit(self.number_b, (self.x, self.y+80))
+
+		
+		screen.blit(self.name, (self.x-50, self.y))
 
 
 

@@ -106,15 +106,15 @@ def mov(node, inst):
 		if aux[1] in PORTS:
 			org, t_org = aux[1], 'port'
 		elif aux[1] == 'ACC':
-			print('Origen acc')
+			#print('Origen acc')
 			org, t_org = aux[1], 'acc'
 		else:
-			print('falso')
+			#print('falso')
 			ret = False
 	
 	# Destino y tipo de destino
 	if aux[2] in PORTS:
-		print('Destino puerto')
+		#print('Destino puerto')
 		dst, t_dst = aux[2], 'port'
 	elif aux[2] == 'ACC':
 		dst, t_dst = aux[2], 'acc'

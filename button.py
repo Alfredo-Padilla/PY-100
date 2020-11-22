@@ -8,9 +8,10 @@ class Button_blueprint():
 		self.text = text
 		self.text_surface = CONST.FONT.render(text, True, self.color)
 		self.active = False
+		self.alive = True
 
 	def handle_event(self, event):
-		if event.type == pg.MOUSEBUTTONDOWN:
+		if event.type == pg.MOUSEBUTTONDOWN and self.alive:
 			if self.rect.collidepoint(event.pos):
 				self.active = not self.active
 			else:
