@@ -2,6 +2,7 @@ import pygame
 from itertools import chain
 
 def truncline(text, font, maxwidth):
+        #print('Truncline: ', text)
         real = len(text)       
         stext = text           
         l = font.size(text)[0]
@@ -41,7 +42,7 @@ def wrapline(text, font, maxwidth):
         else:
             sal.append(aux)
 
-                     
+    #print(sal)                
     return sal
 
 

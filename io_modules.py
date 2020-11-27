@@ -3,16 +3,19 @@ import constants as CONST
 import json
 
 class Input:
-	PORT = None
-	DATA_INDEX = 0
+	
 
 	def __init__(self, x, y, w, h, data, name):
 		self.rect = pg.Rect(x, y, w, h)
 		self.color = CONST.COLOR_INACTIVE
 		self.name = name
 		self.draw_name = CONST.FONT.render(name, True, self.color)
+		
+		self.PORT = None
+		self.DATA_INDEX = 0
 
 		self.data = data
+		#print(data)
 		self.txt_surface = []
 		for i in range(len(data)):
 			self.txt_surface.append(CONST.FONT.render(str(data[i]), True, self.color))
@@ -37,18 +40,21 @@ class Input:
 			screen.blit(self.txt_surface[i], (self.rect.x+10, self.rect.y+ 30*i+10))
 
 class Output:
-	PORT = None
-	DATA_INDEX = 0
-	SOLUTIONS = []
 
 	def __init__(self, x, y, w, h, data, name):
+		self.SOLUTIONS = []
 		self.rect_1 = pg.Rect(x, y, w, h)
 		self.rect_2 = pg.Rect(x+self.rect_1.w, y, w, h)
 		self.color = CONST.COLOR_INACTIVE
 		self.name = name
 		self.draw_name = CONST.FONT.render(name, True, self.color)
+		
+		self.PORT = None
+		self.DATA_INDEX = 0
 
-		self.data = data
+		#print("Data: ",data)
+		self.data = [int(i) for i in data]
+		
 		self.txt_surface = []
 		for i in range(len(data)):
 			self.txt_surface.append(CONST.FONT.render(str(data[i]), True, self.color))
@@ -60,7 +66,8 @@ class Output:
 	def get_data(self):
 		ret = False
 
-		#print('== get data == ',self.PORT.CONT_B)
+		#print(self.name," == solutions == ",self.SOLUTIONS)
+		#print(self.name,' == get data == ',self.PORT.CONT_B,' - ',self.PORT)
 		if self.PORT.CONT_B != None and self.DATA_INDEX < len(self.data):
 			self.SOLUTIONS.append(self.PORT.CONT_B)
 			#print(self.SOLUTIONS)
@@ -70,7 +77,9 @@ class Output:
 				self.DATA_INDEX += 1
 				self.render_text(color=CONST.COLOR_TRUE)
 			else:
+				#print(self.data[self.DATA_INDEX], self.SOLUTIONS[self.DATA_INDEX])
 				self.render_text(color=CONST.COLOR_FALSE)
+				print(' == ERROR DE SALIDA == ')
 				ret = True
 
 		return ret
@@ -93,6 +102,7 @@ class Output:
 
 		for i in range(len(self.SOLUTIONS)):
 			screen.blit(self.sol_surface[i], (self.rect_2.x+10, self.rect_2.y+ 30*i+10))
+		#print(self.name," SOLUTIONS ",self.SOLUTIONS)
 
 
 

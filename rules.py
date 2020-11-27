@@ -1,6 +1,7 @@
 import pygame as pg
 import constants as CONST
 import json
+from pygame_utils import wrapline
 
 class RuleBox:
 	def __init__(self, x, y, w, h, txt, title="Title"):
@@ -9,19 +10,18 @@ class RuleBox:
 		self.title = CONST.FONT.render(' - '+title+' - ', True, self.color)
 		
 		self.txt = txt
+		print(self.txt)
 		self.txt_surface = []
 		for i in range(len(txt)):
 			self.txt_surface.append(CONST.FONT.render(str(txt[i]), True, self.color))
 
 	def draw(self, screen):
 		pg.draw.rect(screen, self.color, self.rect, 2)
-		size = ( (self.rect.x+self.rect.w/2) - self.title.get_size()[0]/2,
-			 	self.rect.y-30)
+		size = ((self.rect.x+self.rect.w/2) - self.title.get_size()[0]/2, self.rect.y-30)
 		screen.blit(self.title, size)
+
 		for i in range(len(self.txt_surface)):
 			screen.blit(self.txt_surface[i], (self.rect.x+10, self.rect.y+ 30*i+10))
-
-
 
 def main():
 	pg.init()

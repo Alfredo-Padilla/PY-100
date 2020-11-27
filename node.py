@@ -1,13 +1,13 @@
 import pygame as pg
 import constants as CONST
 import instructions as INST
-from pygame_utils import wrapline, nombre_variable
+from pygame_utils import wrapline
 
 
 
 # Init
 pg.init()
-screen = pg.display.set_mode((1900, 1060))
+screen = pg.display.set_mode((CONST.SCREEN_W, CONST.SCREEN_H))
 
 # Constantes
 '''
@@ -20,28 +20,38 @@ N_LINEAS = 10
 
 # Clase Nodo
 class Node:
-	# Puertos
-	UP = None
-	RIGHT = None
-	DOWN = None
-	LEFT = None
-
-	# Registros
-	ACC = 0
-	BAK = 0
-
-	CURRENT_INST = 0
-
 	def __init__(self, x, y, w, h, text=''):
+		# Puertos
+		self.UP = None
+		self.RIGHT = None
+		self.DOWN = None
+		self.LEFT = None
+
+		# Registros
+		self.ACC = 0
+		self.BAK = 0
+
+		self.TAGS = []
+		self.CURRENT_INST = [0]
+
+
+		self.active = False
 		self.rect = pg.Rect(x, y, w, h)
+		
 		self.color = CONST.COLOR_INACTIVE
 		self.text = text
 		self.txt_surface = []
 		for i in range(CONST.N_LINEAS):
-			self.txt_surface.append(CONST.FONT.render(text, True, self.color))
-		self.active = False
+			try:
+				self.txt_surface.append( CONST.FONT_SM.render(text[i], 1, self.color))
+				#print('Hay texto ',text[i])
+			except IndexError:
+				self.txt_surface.append( CONST.FONT_SM.render('', 1, self.color))
+				#print('NO hay texto')
+				
+		#print(self.text)
 
-		self.TAGS = []
+		
 
 		w_reg = int(w/5)
 		h_reg = int(h/5)
@@ -72,18 +82,23 @@ class Node:
 		self.idle_surface = CONST.FONT_SM.render('0%', True, self.color)
 	
 	def get_text(self):
-		return [i.strip() for i in wrapline(self.text.upper(), CONST.FONT, 300)]
+		return [i.strip() for i in wrapline(self.text.upper(), CONST.FONT_SM, 400)]
+		#return [i.strip() for i in self.text.upper()]
 
 	def render_text(self, color=None):
 		if color == None:
 			color = self.color
 
 		aux = self.get_text()
+		aux = self.text.split('\r')
+		#print(type(aux), aux)
 		for l in range(len(self.txt_surface)):
 			try:
 				self.txt_surface[l] = CONST.FONT.render(aux[l], 10, color)  
 			except IndexError:
 				self.txt_surface[l] = CONST.FONT.render('', 10, color)
+
+		#print(aux)
 		return aux
 
 	def get_line(self, line):
@@ -124,7 +139,10 @@ class Node:
 
 
 	def draw(self, screen):
+		#self.render_text()
 		for i in self.txt_surface:
+			if i == self.CURRENT_INST[0]:
+				self.txt_surface[i] = self.render_line(i, CONST.COLOR_RUNNING)
 			screen.blit(i, (self.rect.x+10, self.rect.y+30*self.txt_surface.index(i)+10 ) )
 		pg.draw.rect(screen, self.color, self.rect, 2)
 		
@@ -157,26 +175,27 @@ class Node:
 
 
 	def next_inst(self):
-		if self.CURRENT_INST+1 < len(self.get_text()):
-			self.CURRENT_INST += 1
+		if self.CURRENT_INST[0]+1 < len(self.text.split('\r')):
+			self.CURRENT_INST[0] += 1
 		else:
-			self.CURRENT_INST = 0
+			self.CURRENT_INST[0] = 0
 
 	def run_inst(self):
 		ret = True
 
 		#print(self.TAGS)
 		insts = self.render_text()
-		#print(insts)
-		if insts[self.CURRENT_INST] != '':
-			if insts[self.CURRENT_INST] in self.TAGS:
+		if insts[self.CURRENT_INST[0]] != '':
+			print("Instrucciones: ",insts)
+			print("Inst actual:", self.CURRENT_INST[0])
+			if insts[self.CURRENT_INST[0]] in self.TAGS:
 				self.next_inst()
 			else:
-				print('\n'+str(self.CURRENT_INST)+': '+insts[self.CURRENT_INST])
+				print('\n'+str(self.CURRENT_INST[0])+': '+insts[self.CURRENT_INST[0]])
 				
-				ret = INST.inst_launcher(self, insts[self.CURRENT_INST])
+				ret = INST.inst_launcher(self, insts[self.CURRENT_INST[0]])
 				if ret:
-					self.render_line(self.CURRENT_INST, color=CONST.COLOR_RUNNING)
+					self.render_line(self.CURRENT_INST[0], color=CONST.COLOR_RUNNING)
 					self.next_inst()
 
 		return ret
@@ -203,29 +222,79 @@ class Node:
 
 
 	def move_to_port(self, port, cont):
-		if port == 'UP':
+		ret = True
+		if port=='UP' and self.UP.CONT_A==None:
 			self.UP.CONT_A = int(cont)
-		elif port == 'RIGHT':
+			print("- - - moviendo a UP: ",cont)
+			print("- - - nuevo contenido de UP: ",self.UP.CONT_A)
+		
+		elif port=='RIGHT' and self.RIGHT.CONT_A==None:
 			self.RIGHT.CONT_A = int(cont)
-		elif port == 'DOWN':
+			print("- - - moviendo a RIGHT: ",cont)
+			print("- - - nuevo contenido de RIGHT: ",self.RIGHT.CONT_A)
+		
+		elif port=='DOWN' and self.DOWN.CONT_B==None:
 			self.DOWN.CONT_B = int(cont)
-		elif port == 'LEFT':
+			print("- - - moviendo a DOWN: ",cont)
+			print("- - - nuevo contenido de DOWN: ",self.DOWN.CONT_B)
+		
+		elif port=='LEFT' and self.LEFT.CONT_B==None:
 			self.LEFT.CONT_B = int(cont)
+			print("- - - moviendo a LEFT: ",cont)
+			print("- - - nuevo contenido de LEFT: ",self.LEFT.CONT_B)
+		
+		else:
+			ret = False
+		
+		return ret
+		#print("move_to_port: ", cont)
 	
 	def move_from_port(self, port):
 		ret = False
+		#if self.RIGHT!=None:
+			#print("CONT B: ",self.RIGHT.CONT_A)
 		if port=='UP' and self.UP.CONT_B!=None:
 			ret = self.UP.CONT_B
 			self.UP.CONT_B = None
+			print("- - - moviendo de UP: ",ret)
+			print("- - - nuevo contenido de UP: ",self.UP.CONT_B)
+		
 		elif port=='RIGHT' and self.RIGHT.CONT_B!=None:
 			ret = self.RIGHT.CONT_B
 			self.RIGHT.CONT_B = None
+			print("- - - moviendo de RIGHT: ",ret)
+			print("- - - nuevo contenido de RIGHT: ",self.RIGHT.CONT_B)
+		
 		elif port == 'DOWN' and self.DOWN.CONT_A!=None:
 			ret = self.DOWN.CONT_A
 			self.DOWN.CONT_A = None
+			print("- - - moviendo de DOWN: ",ret)
+			print("- - - nuevo contenido de DOWN: ",self.DOWN.CONT_A)
+		
 		elif port == 'LEFT' and self.LEFT.CONT_A!=None:
 			ret = self.LEFT.CONT_A
 			self.LEFT.CONT_A = None
+			print("- - - moviendo de LEFT: ",ret)
+			print("- - - nuevo contenido de LEFT: ",self.LEFT.CONT_A)
+
+		#print("move_from_port: ",ret)
+		return ret
+
+	def dest_port_is_empty(self, port):
+		ret = False
+
+		if port=='UP':
+			if self.UP.CONT_B != None:
+				ret = True
+		if port=='RIGHT':
+			if self.RIGHT.CONT_B != None:
+				ret = True
+		if port=='DOWN':
+			if self.DOWN.CONT_A != None:
+				ret = True
+		if port=='LEFT':
+			if self.LEFT.CONT_A != None:
+				ret = True
 
 		return ret
 
@@ -239,19 +308,22 @@ class Node:
 		if t_org == 'int':
 			if t_dst == 'acc':
 				self.ACC = int(org)
+				print("- - - nuevo contenido de ACC: ",self.ACC)
 			elif t_dst == 'port':
-				self.move_to_port(dst, org)
+				ret = self.move_to_port(dst, org)
 		
 		elif t_org == 'acc':
-			self.move_to_port(dst, self.ACC)
+			ret = self.move_to_port(dst, self.ACC)
 		
 		elif t_org == 'port':
 			aux = self.move_from_port(org)
 			if aux:
 				if t_dst == 'acc':
 					self.ACC = aux
+					print("- - - nuevo contenido de ACC: ",self.ACC)
 				elif t_dst == 'port':
-					self.move_to_port(dst, aux)
+					#print("Test: ",dst)
+					ret = self.move_to_port(dst, int(aux))
 			else:
 				ret = False
 		else:
@@ -276,14 +348,16 @@ class Node:
 	# ADD
 	def ADD(self, org, t_org):
 		ret = True
-	
+		
+		self.ACC = int(self.ACC)
 		if t_org == 'int':
 			self.ACC += int(org)
 		elif t_org == 'acc':
-			self.move_to_port(dst, self.ACC+int(org))
+			self.ACC += int(self.ACC)
 		elif t_org == 'port':
-			self.ACC += int(self.move_from_port(org))
-
+			aux = self.move_from_port(org)
+			if aux:
+				self.ACC += int(aux)
 		else:
 			ret = False
 		
@@ -292,14 +366,19 @@ class Node:
 	# SUB
 	def SUB(self, org, t_org):
 		ret = True
-	
+
+		self.ACC = int(self.ACC)
 		if t_org == 'int':
 			self.ACC -= int(org)
 		elif t_org == 'acc':
-			self.move_to_port(dst, self.ACC-int(org))
+			self.ACC -= int(org)
 		elif t_org == 'port':
-			self.ACC -= int(self.move_from_port(org))
-
+			aux = self.move_from_port(org)
+			#print("SUB: ", aux)
+			if aux:
+				self.ACC -= int(aux)
+			else:
+				ret = False
 		else:
 			ret = False
 		
@@ -307,7 +386,8 @@ class Node:
 
 	# NEG
 	def NEG(self):
-		self.ACC = self.ACC * (-1)
+		self.ACC = int(self.ACC) * -1
+		print(self.ACC)
 		return True
 
 
@@ -316,15 +396,26 @@ class Node:
 	# ====== #
 	# JMP
 	def JMP(self, i):
-		self.CURRENT_INST = i
-		return True
+		ret = False
+
+		if i < len(self.text):
+			self.CURRENT_INST[0] = i-1
+		else:
+			self.CURRENT_INST[0] = 0
+			ret = True
+
+		return ret
 
 	# JEZ
 	def JEZ(self, i):
 		ret = False
 		
 		if int(self.ACC) == 0:
-			self.CURRENT_INST = i
+			if i < len(self.text):
+				self.CURRENT_INST[0] = i-1
+			else:
+				self.CURRENT_INST[0] = 0
+			
 			ret = True
 
 		return ret
@@ -334,7 +425,11 @@ class Node:
 		ret = False
 		
 		if int(self.ACC) != 0:
-			self.CURRENT_INST = i
+			if i < len(self.text):
+				self.CURRENT_INST[0] = i-1
+			else:
+				self.CURRENT_INST[0] = 0
+
 			ret = True
 
 		return ret
@@ -344,7 +439,11 @@ class Node:
 		ret = False
 		
 		if int(self.ACC) > 0:
-			self.CURRENT_INST = i
+			if i < len(self.text):
+				self.CURRENT_INST[0] = i-1
+			else:
+				self.CURRENT_INST[0] = 0
+
 			ret = True
 
 		return ret
@@ -354,7 +453,11 @@ class Node:
 		ret = False
 		
 		if int(self.ACC) < 0:
-			self.CURRENT_INST = i
+			if i < len(self.text):
+				self.CURRENT_INST[0] = i-1
+			else:
+				self.CURRENT_INST[0] = 0
+
 			ret = True
 
 		return ret

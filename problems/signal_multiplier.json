@@ -1,0 +1,58 @@
+{
+	"title": "SIGNAL MULTIPLIER",
+	"rules":[
+		"Take the values from IN and double them"
+	],	
+	"io": {
+		"input": {
+			"number": 1,
+			"names": ["IN A"]
+		},
+		"output": {
+			"number": 1,
+			"names": ["OUT A"]
+		}
+	},
+	"input": [
+		[
+			5,
+			10,
+			20,
+			3,
+			76,
+			1,
+			1,
+			22,
+			31,
+			48,
+			22,
+			39
+		]
+	],
+
+	"output": [
+		[
+			10,
+			20,
+			40,
+			6,
+			152,
+			2,
+			2,
+			44,
+			62,
+			96,
+			44,
+			78
+		]
+	],
+
+	"code": [
+		["MOV UP ACC",
+		 "ADD ACC",
+		 "MOV ACC DOWN"],
+		[""],
+		["MOV UP DOWN"],
+		[""]
+	]
+}

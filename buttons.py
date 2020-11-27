@@ -47,4 +47,19 @@ class Button_Play(Button_blueprint):
 		return ret
 
 
+class Button_SpeedUp(Button_blueprint):
+	def handle_event(self, event):
+		ret = False
+		if event and event.type == pg.MOUSEBUTTONDOWN:
+			if self.rect.collidepoint(event.pos):
+				self.active = not self.active
+				ret = 4
+			else:
+				self.active = False
+			self.color = CONST.COLOR_ACTIVE if self.active else CONST.COLOR_INACTIVE
+			self.text_surface = CONST.FONT.render(self.text, True, self.color)
+			
+		return ret
+
+
 

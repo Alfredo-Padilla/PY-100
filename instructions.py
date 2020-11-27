@@ -188,13 +188,14 @@ def sub(node, inst):
 			print('Origen acc')
 			org, t_org = aux[1], 'acc'
 		else:
-			print('falso')
+			#print('falso')
 			ret = False
-
-
+	
 	if ret:
 		print('- - - Rwestando {} de {} al ACC'.format(org, aux [1]))
-		node.SUB(org, t_org)
+		ret = node.SUB(org, t_org)
+
+	#print(ret)
 
 	return ret
 
@@ -213,7 +214,8 @@ def find_tag(node, inst):
 	n = 0
 	
 	aux = inst.split(' ')[-1]+':'
-	txt = node.get_text()
+	txt = node.text.split('\r')
+	print("find_tag: ",txt, type(txt))
 	if aux in node.TAGS:
 		for line in range(len(txt)):
 			if txt[line].endswith(aux):

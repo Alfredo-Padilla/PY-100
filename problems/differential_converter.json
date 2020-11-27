@@ -1,0 +1,90 @@
+{
+	"title": "DIFFERENTIAL CONVERTER",
+	"rules":[
+		"Write IN A - IN B to outp A",
+		"and IN B - IN A in IN A"
+	],	
+	"io": {
+		"input": {
+			"number": 2,
+			"names": ["IN A", "IN B"]
+		},
+		"output": {
+			"number": 2,
+			"names": ["OUT A", "OUT B"]
+		}
+	},
+	"input": [
+		[
+			44,
+			78,
+			88,
+			95,
+			65,
+			63,
+			41,
+			26,
+			87,
+			75,
+			21,
+			21
+		],
+		[
+			93,
+			60,
+			92,
+			68,
+			56,
+			30,
+			90,
+			65,
+			94,
+			92,
+			62,
+			35
+		]
+	],
+	"output": [
+		[
+			-49,
+			18,
+			-4,
+			27,
+			9,
+			33,
+			-49,
+			-39,
+			-7,
+			-17,
+			-41,
+			-14
+		],
+		[
+			49,
+			-18,
+			4,
+			-27,
+			-9,
+			-33,
+			49,
+			39,
+			7,
+			17,
+			41,
+			14
+		]
+	],
+	"code": [
+		["MOV UP ACC",
+		 "SUB RIGHT",
+		 "MOV ACC DOWN",
+		 "MOV ACC RIGHT"],
+		["MOV UP ACC",
+		 "MOV ACC LEFT",
+		 "MOV LEFT ACC",
+		 "NEG",
+		 "MOV ACC DOWN"],
+		["MOV UP DOWN"],
+		["MOV UP DOWN"]
+	]
+}

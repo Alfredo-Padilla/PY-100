@@ -1,0 +1,92 @@
+{
+	"title": "SEQUENCE GENERATOR",
+	"rules":[
+		"Sequences are 0 terminated.",
+		"Read values from IN A and IN B",
+		"write the lesser value to OUT",
+		"write the greater value to OUT.",
+		"Write 0 to end the sequence"
+	],	
+	"io": {
+		"input": {
+			"number": 2,
+			"names": ["IN A", "IN B"]
+		},
+		"output": {
+			"number": 1,
+			"names": ["OUT"]
+		}
+	},
+	"input": [
+		[
+			46,
+			71,
+			66,
+			21,
+			79,
+			23,
+			62,
+			23
+		],
+		[
+			71,
+			29,
+			90,
+			67,
+			79,
+			84,
+			78,
+			27
+		]
+	],
+	"output": [
+		[
+			46,
+			71,
+			0,
+			29,
+			71,
+			0,
+			66,
+			90,
+			0,
+			21,
+			67,
+			0,
+			79,
+			79,
+			0,
+			23,
+			84,
+			0,
+			62,
+			78,
+			0,
+			23,
+			27,
+			0
+		]
+	],
+	"code": [
+		["I:",
+		  "MOV UP ACC",
+		  "SAV",
+		  "SUB RIGHT",
+		  "JGZ MAYOR",
+		  "SWP",
+		  "MOV ACC DOWN",
+		  "MOV RIGHT DOWN",
+		  "JMP I",
+		  "MAYOR:",
+		   "MOV RIGHT DOWN",
+		   "SWP",
+		   "MOV ACC DOWN"],
+		["MOV UP ACC",
+		 "MOV ACC LEFT",
+		 "MOV ACC LEFT"],
+		["MOV UP DOWN",
+		 "MOV UP DOWN",
+		 "MOV 0 DOWN"],
+		[]
+	]
+}

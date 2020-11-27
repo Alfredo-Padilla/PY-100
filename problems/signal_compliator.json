@@ -1,0 +1,91 @@
+{
+	"title": "SIGNAL COMPILATOR [FALLA]",
+	"rules":[
+		"Read the values from IN",
+		"If IN > 0 write 1 to OUT A",
+		"Else write 1 to OUT B",
+		"When a 1 is not written to",
+		"an output write 0 instead"
+	],	
+	"io": {
+		"input": {
+			"number": 1,
+			"names": ["IN"]
+		},
+		"output": {
+			"number": 2,
+			"names": ["OUT A", "OUT B"]
+		}
+	},
+	"input": [
+		[
+			1,
+			5,
+			-10,
+			-20,
+			3,
+			-76,
+			-1,
+			1,
+			22,
+			31,
+			48,
+			-22,
+			39
+		]
+	],
+
+	"output": [
+		[
+			1,
+			1,
+			0,
+			0,
+			1,
+			0,
+			0,
+			1,
+			1,
+			1,
+			1,
+			0,
+			1
+		],
+		[
+			0,
+			0,
+			1,
+			1,
+			0,
+			1,
+			1,
+			0,
+			0,
+			0,
+			0,
+			1,
+			0
+		]
+	],
+
+	"code": [
+		["MOV UP DOWN"],
+		[""],
+		["I:",
+		 "MOV UP ACC",
+		 "JGZ TRUE",
+		 "MOV ACC RIGHT",
+		 "MOV 0 DOWN",
+		 "JMP I",
+		 "TRUE:",
+		 "MOV 1 DOWN",
+		 "MOV ACC RIGHT"],
+		["I:",
+		 "MOV LEFT ACC",
+		 "JLZ TRUE",
+		 "MOV 0 DOWN",
+		 "JMP I",
+		 "TRUE:",
+		 "MOV 1 DOWN"]
+	]
+}
