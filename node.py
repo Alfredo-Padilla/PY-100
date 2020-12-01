@@ -20,7 +20,7 @@ N_LINEAS = 10
 
 # Clase Nodo
 class Node:
-	def __init__(self, x, y, w, h, text=''):
+	def __init__(self, x, y, w, h, text='', demo_mode=False):
 		# Puertos
 		self.UP = None
 		self.RIGHT = None
@@ -36,6 +36,7 @@ class Node:
 
 
 		self.active = False
+		self.demo_mode = demo_mode
 		self.rect = pg.Rect(x, y, w, h)
 		
 		self.color = CONST.COLOR_INACTIVE
@@ -50,8 +51,6 @@ class Node:
 				#print('NO hay texto')
 				
 		#print(self.text)
-
-		
 
 		w_reg = int(w/5)
 		h_reg = int(h/5)
@@ -82,15 +81,21 @@ class Node:
 		self.idle_surface = CONST.FONT_SM.render('0%', True, self.color)
 	
 	def get_text(self):
-		return [i.strip() for i in wrapline(self.text.upper(), CONST.FONT_SM, 400)]
-		#return [i.strip() for i in self.text.upper()]
+		if self.demo_mode:
+			ret = [i.strip() for i in wrapline(self.text.upper(), CONST.FONT_SM, 800)]
+			return [i.strip() for i in wrapline(self.text.upper(), CONST.FONT_SM, 400)]
+		else:
+			ret = [i.strip() for i in wrapline(self.text.upper(), CONST.FONT_SM, 250)]
+		return ret
 
 	def render_text(self, color=None):
 		if color == None:
 			color = self.color
 
 		aux = self.get_text()
+		#print(aux)
 		aux = self.text.split('\r')
+		#print(aux)
 		#print(type(aux), aux)
 		for l in range(len(self.txt_surface)):
 			try:
@@ -104,7 +109,6 @@ class Node:
 	def get_line(self, line):
 		return self.get_text()[line]
 
-
 	def render_line(self, line, color=None):
 		if color == None:
 			color = self.color
@@ -112,7 +116,6 @@ class Node:
 			self.txt_surface[line] = CONST.FONT.render(self.get_line(line), 10, color)  
 		except IndexError:
 			self.txt_surface[line] = CONST.FONT.render('', 10, color)
-
 
 	# EVENTOS
 	def handle_event(self, event):
@@ -122,20 +125,19 @@ class Node:
 			else:
 				self.active = False
 			self.color = CONST.COLOR_ACTIVE if self.active else CONST.COLOR_INACTIVE
+		
 		elif event.type == pg.KEYDOWN and self.active:
 			if event.key == pg.K_RETURN:
-				#print(self.text)
 				self.text += event.unicode
+				#print(self.text)
 			elif event.key == pg.K_BACKSPACE:
 				self.text = self.text[:-1]
 			else:
-				self.text += event.unicode
+				self.text += event.unicode.upper()
 			
 		self.render_text()
-		#print(self.render_text())
 		self.register_tags()
 		self.clean_tags()
-		#print(self.TAGS)
 
 
 	def draw(self, screen):
@@ -181,18 +183,22 @@ class Node:
 			self.CURRENT_INST[0] = 0
 
 	def run_inst(self):
+		print('run_inst()',id(self))
 		ret = True
 
 		#print(self.TAGS)
 		insts = self.render_text()
+		if len(insts) < self.CURRENT_INST[0]+1:
+			self.CURRENT_INST[0] = 0
+		print('Inst actual: ',self.CURRENT_INST[0])
 		if insts[self.CURRENT_INST[0]] != '':
-			print("Instrucciones: ",insts)
+			print("\nInstrucciones: ",insts)
 			print("Inst actual:", self.CURRENT_INST[0])
 			if insts[self.CURRENT_INST[0]] in self.TAGS:
+				print('Ignorando el tag')
 				self.next_inst()
 			else:
-				print('\n'+str(self.CURRENT_INST[0])+': '+insts[self.CURRENT_INST[0]])
-				
+				print(str(self.CURRENT_INST[0])+': '+insts[self.CURRENT_INST[0]])
 				ret = INST.inst_launcher(self, insts[self.CURRENT_INST[0]])
 				if ret:
 					self.render_line(self.CURRENT_INST[0], color=CONST.COLOR_RUNNING)
@@ -203,7 +209,6 @@ class Node:
 	def register_tags(self):
 		txt = self.get_text()
 
-		#if len(txt) > 0:
 		for line in txt:
 			if len(line) > 0:
 				if line[-1] == ':':
@@ -218,8 +223,6 @@ class Node:
 			for tag in self.TAGS:
 				if tag not in txt:
 					self.TAGS.remove(tag)
-
-
 
 	def move_to_port(self, port, cont):
 		ret = True
@@ -243,6 +246,9 @@ class Node:
 			print("- - - moviendo a LEFT: ",cont)
 			print("- - - nuevo contenido de LEFT: ",self.LEFT.CONT_B)
 		
+		elif port=='NIL':
+			print("- - - moviendo a NIL: ",cont)
+
 		else:
 			ret = False
 		
@@ -251,15 +257,18 @@ class Node:
 	
 	def move_from_port(self, port):
 		ret = False
+		print('- - - Lanzando move_from_port() con puerto:', port)
+
 		#if self.RIGHT!=None:
 			#print("CONT B: ",self.RIGHT.CONT_A)
-		if port=='UP' and self.UP.CONT_B!=None:
+		if port == 'UP' and self.UP.CONT_B!=None:
 			ret = self.UP.CONT_B
 			self.UP.CONT_B = None
 			print("- - - moviendo de UP: ",ret)
 			print("- - - nuevo contenido de UP: ",self.UP.CONT_B)
 		
-		elif port=='RIGHT' and self.RIGHT.CONT_B!=None:
+		elif port == 'RIGHT' and self.RIGHT.CONT_B!=None:
+			print()
 			ret = self.RIGHT.CONT_B
 			self.RIGHT.CONT_B = None
 			print("- - - moviendo de RIGHT: ",ret)
@@ -277,27 +286,50 @@ class Node:
 			print("- - - moviendo de LEFT: ",ret)
 			print("- - - nuevo contenido de LEFT: ",self.LEFT.CONT_A)
 
+		elif port == 'NIL':
+			ret = 0
+			print("- - - moviendo de NIL: ",0)
+
 		#print("move_from_port: ",ret)
 		return ret
 
 	def dest_port_is_empty(self, port):
 		ret = False
 
-		if port=='UP':
-			if self.UP.CONT_B != None:
+		if port == 'UP':
+			if self.UP.CONT_A == None:
 				ret = True
-		if port=='RIGHT':
-			if self.RIGHT.CONT_B != None:
+		if port == 'RIGHT':
+			if self.RIGHT.CONT_A == None:
 				ret = True
-		if port=='DOWN':
-			if self.DOWN.CONT_A != None:
+		if port == 'DOWN': 
+			if self.DOWN.CONT_B == None:
 				ret = True
-		if port=='LEFT':
-			if self.LEFT.CONT_A != None:
+		if port == 'LEFT': 
+			if self.LEFT.CONT_B == None:
 				ret = True
 
+		print('dest_port_is_empty() -> ',ret)
 		return ret
+	
+	def org_port_is_empty(self, port):
+		ret = False
 
+		if port=='UP': 
+			if self.UP.CONT_B == None:
+				ret = True
+		if port=='RIGHT': 
+			if self.RIGHT.CONT_B == None:
+				ret = True
+		if port=='DOWN': 
+			if self.DOWN.CONT_A == None:
+				ret = True
+		if port=='LEFT': 
+			if self.LEFT.CONT_A == None:
+				ret = True
+
+		print('org_port_is_empty() -> ',ret)
+		return ret
 	# ======= #
 	# MEMORIA #
 	# ======= #
@@ -315,15 +347,21 @@ class Node:
 		elif t_org == 'acc':
 			ret = self.move_to_port(dst, self.ACC)
 		
-		elif t_org == 'port':
-			aux = self.move_from_port(org)
-			if aux:
-				if t_dst == 'acc':
+		elif t_org == 'port' and not self.org_port_is_empty(org):
+			if t_dst == 'acc':
+				aux = self.move_from_port(org)
+				if aux != False:
 					self.ACC = aux
 					print("- - - nuevo contenido de ACC: ",self.ACC)
-				elif t_dst == 'port':
-					#print("Test: ",dst)
+				else:
+					ret = False
+			elif self.dest_port_is_empty(dst):
+				aux = self.move_from_port(org)
+				if aux and t_dst == 'port':
 					ret = self.move_to_port(dst, int(aux))
+				else:
+					ret = False
+
 			else:
 				ret = False
 		else:
@@ -355,9 +393,15 @@ class Node:
 		elif t_org == 'acc':
 			self.ACC += int(self.ACC)
 		elif t_org == 'port':
-			aux = self.move_from_port(org)
-			if aux:
-				self.ACC += int(aux)
+			if self.dest_port_is_empty(org):
+				aux = self.move_from_port(org)
+				print('Sumando desde puerto: ', aux)
+				if aux != False:
+					self.ACC += int(aux)
+				else:
+					ret = False
+			else:
+				ret = True
 		else:
 			ret = False
 		
@@ -398,7 +442,9 @@ class Node:
 	def JMP(self, i):
 		ret = False
 
-		if i < len(self.text):
+		if i == 0:
+			self.CURRENT_INST[0] = 0
+		elif i < len(self.text):
 			self.CURRENT_INST[0] = i-1
 		else:
 			self.CURRENT_INST[0] = 0
@@ -425,7 +471,9 @@ class Node:
 		ret = False
 		
 		if int(self.ACC) != 0:
-			if i < len(self.text):
+			if i == 0:
+				self.CURRENT_INST[0] = 0
+			elif i < len(self.text):
 				self.CURRENT_INST[0] = i-1
 			else:
 				self.CURRENT_INST[0] = 0
@@ -487,7 +535,6 @@ def main():
 
 		pg.display.flip()
 		clock.tick(30)
-
 
 if __name__ == '__main__':
 	main()

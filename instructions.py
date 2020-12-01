@@ -25,14 +25,15 @@ DIRECTIONS = [
 	'DOWN',
 	'LEFT'
 	#'ANY',
-	#'NIL'
+	'NIL'
 ]
 
 PORTS = [
 	'UP',
 	'RIGHT',
 	'DOWN',
-	'LEFT'
+	'LEFT',
+	'NIL'
 ]
 
 # Aquí se almacenan las etiquetas personalizadas
@@ -156,9 +157,10 @@ def add(node, inst):
 		org, t_org = int(aux[1]), 'int'
 	except:
 		if aux[1] in PORTS:
+			print('Origen PORT')
 			org, t_org = aux[1], 'port'
 		elif aux[1] == 'ACC':
-			print('Origen acc')
+			print('Origen ACC')
 			org, t_org = aux[1], 'acc'
 		else:
 			print('falso')
@@ -167,7 +169,7 @@ def add(node, inst):
 
 	if ret:
 		print('- - - Sumando {} de {} al ACC'.format(org, aux [1]))
-		node.ADD(org, t_org)
+		ret = node.ADD(org, t_org)
 
 	return ret
 

@@ -92,8 +92,9 @@ class Menu:
 		print('find_problems():')
 		print('{')
 		for f in c_dir:
-			ret[f] = f[:f.index('.')].upper()
-			print('\t{} : {}'.format(f, ret[f]))
+			if '.' in f:
+				ret[f] = f[:f.index('.')].upper()
+				print('\t{} : {}'.format(f, ret[f]))
 		print('}')
 
 		return ret

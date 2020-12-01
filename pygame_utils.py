@@ -30,7 +30,7 @@ def wrapline(text, font, maxwidth):
     while not done:             
         nl, done, stext = truncline(text, font, maxwidth) 
         wrapped.append(stext.strip())                  
-        text=text[nl:]
+        text = text[nl:]
 
     #print(wrapped)
     sal = []

@@ -11,11 +11,11 @@ from rules import RuleBox
 
 
 F_NAMES = (
-	'data_pipe',
-	'signal_multiplier',
-	'differential_converter',
-	'sequence_generator',
-	'signal_compliator'
+	'1 - data_pipe',
+	'2 - signal_multiplier',
+	'3 - sequence_compilator'
+	'4 - differential_converter',
+	'5 - sequence_generator',
 )
 
 class Runner:
@@ -31,6 +31,7 @@ class Runner:
 
 	def reset(self, nodes, ports, io):
 		self.speed = 500
+		self.error = False
 
 		for n in nodes:
 			n.ACC = 0
@@ -50,6 +51,7 @@ class Runner:
 					j.SOLUTIONS = []
 				except AttributeError:
 					pass
+					
 	def alternate_speed(self):
 		if self.speed == 500:
 			self.speed = 10
@@ -97,10 +99,10 @@ class Runner:
 
 
 		# NODOS
-		nodo_1_1 = Node(40,  40, 350, 395)
-		nodo_1_2 = Node(600, 40, 350, 395)
-		nodo_2_1 = Node(40,  470, 350, 395)
-		nodo_2_2 = Node(600, 470, 350, 395)
+		nodo_1_1 = Node(40,  40, 350, 395, demo_mode=True)
+		nodo_1_2 = Node(600, 40, 350, 395, demo_mode=True)
+		nodo_2_1 = Node(40,  470, 350, 395, demo_mode=True)
+		nodo_2_2 = Node(600, 470, 350, 395, demo_mode=True)
 		nodes = [nodo_1_1, nodo_1_2, nodo_2_1, nodo_2_2]
 		nodes = self.load_code('problems\\'+self.p_name, nodes)
 
@@ -120,7 +122,13 @@ class Runner:
 
 
 		# PUERTOS
-		puerto_1_1 = Ports(200, 10, 100, 100, vert=True, io_i=True, name=nam_inputs[0])
+		ports = []
+		if num_inputs >= 1:
+			puerto_1_1 = Ports(200, 10, 100, 100, vert=True, io_i=True, name=nam_inputs[0])
+		else:
+			puerto_1_1 = Ports(200, 10, 100, 100, vert=True)
+		ports.append(puerto_1_1)
+		
 		if  num_inputs == 2:
 			puerto_1_2 = Ports(750, 10, 100, 100, vert=True, io_i=True, name=nam_inputs[1])
 		else:
@@ -135,7 +143,7 @@ class Runner:
 			puerto_5_2 = Ports(750, 870, 100, 100, vert=True, io_o=True, name=nam_outputs[1])
 		else:
 			puerto_5_2 = Ports(750, 870, 100, 100, vert=True, io_o=True)
-		ports = [puerto_1_1, puerto_1_2, puerto_2_1, puerto_3_1, puerto_3_2, puerto_4_1, puerto_5_1, puerto_5_2]
+		ports += [puerto_1_2, puerto_2_1, puerto_3_1, puerto_3_2, puerto_4_1, puerto_5_1, puerto_5_2]
 
 		# IO
 		inputs = []
@@ -149,8 +157,8 @@ class Runner:
 		
 
 		# ENLAZAR IO Y PUERTOS
-		
-		inputs[0].PORT = puerto_1_1
+		if num_inputs >= 1:
+			inputs[0].PORT = puerto_1_1
 		if num_inputs == 2:
 			inputs[1].PORT = puerto_1_2
 
@@ -189,13 +197,13 @@ class Runner:
 		# BOTONES
 		w, h = pg.display.get_surface().get_size()
 		button_reset = Button_Reset(40, h-100, 100, 75, 'RESET')
-		#button_pause = Button_Pause(180, h-100, 100, 75, 'PAUSE')
+		button_pause = Button_Pause(180, h-100, 100, 75, 'PAUSE')
 		button_play = Button_Play(320, h-100, 100, 75, 'PLAY')
 		button_speed = Button_SpeedUp(460, h-100, 100, 75, 'SPEED')
 		
 		buttons = [
 			 button_reset
-			#,button_pause
+			,button_pause
 			,button_play
 			,button_speed
 		]
@@ -221,9 +229,10 @@ class Runner:
 							node_index = 0
 						elif aux == 2 and self.running:
 							self.paused = True
+							self.running = False
 						elif aux == 3 and not self.running:
-							self.running = True
 							self.paused = False
+							self.running = True
 						elif aux == 4 and self.running:
 							self.alternate_speed()
 						else:

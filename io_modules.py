@@ -4,7 +4,6 @@ import json
 
 class Input:
 	
-
 	def __init__(self, x, y, w, h, data, name):
 		self.rect = pg.Rect(x, y, w, h)
 		self.color = CONST.COLOR_INACTIVE
