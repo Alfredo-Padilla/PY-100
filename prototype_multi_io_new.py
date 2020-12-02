@@ -36,7 +36,7 @@ class Runner:
 		for n in nodes:
 			n.ACC = 0
 			n.BAK = 0
-			n.CURRENT_INST[0] = 0
+			n.CURRENT_INST = 0
 			n.render_text()
 			n.TAGS = []
 

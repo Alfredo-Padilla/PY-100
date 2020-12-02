@@ -32,7 +32,7 @@ class Node:
 		self.BAK = 0
 
 		self.TAGS = []
-		self.CURRENT_INST = [0]
+		self.CURRENT_INST = 0
 
 
 		self.active = False
@@ -143,7 +143,7 @@ class Node:
 	def draw(self, screen):
 		#self.render_text()
 		for i in self.txt_surface:
-			if i == self.CURRENT_INST[0]:
+			if i == self.CURRENT_INST:
 				self.txt_surface[i] = self.render_line(i, CONST.COLOR_RUNNING)
 			screen.blit(i, (self.rect.x+10, self.rect.y+30*self.txt_surface.index(i)+10 ) )
 		pg.draw.rect(screen, self.color, self.rect, 2)
@@ -177,10 +177,10 @@ class Node:
 
 
 	def next_inst(self):
-		if self.CURRENT_INST[0]+1 < len(self.text.split('\r')):
-			self.CURRENT_INST[0] += 1
+		if self.CURRENT_INST+1 < len(self.text.split('\r')):
+			self.CURRENT_INST += 1
 		else:
-			self.CURRENT_INST[0] = 0
+			self.CURRENT_INST = 0
 
 	def run_inst(self):
 		print('run_inst()',id(self))
@@ -188,20 +188,20 @@ class Node:
 
 		#print(self.TAGS)
 		insts = self.render_text()
-		if len(insts) < self.CURRENT_INST[0]+1:
-			self.CURRENT_INST[0] = 0
-		print('Inst actual: ',self.CURRENT_INST[0])
-		if insts[self.CURRENT_INST[0]] != '':
+		if len(insts) < self.CURRENT_INST+1:
+			self.CURRENT_INST = 0
+		print('Inst actual: ',self.CURRENT_INST)
+		if insts[self.CURRENT_INST] != '':
 			print("\nInstrucciones: ",insts)
-			print("Inst actual:", self.CURRENT_INST[0])
-			if insts[self.CURRENT_INST[0]] in self.TAGS:
+			print("Inst actual:", self.CURRENT_INST)
+			if insts[self.CURRENT_INST] in self.TAGS:
 				print('Ignorando el tag')
 				self.next_inst()
 			else:
-				print(str(self.CURRENT_INST[0])+': '+insts[self.CURRENT_INST[0]])
-				ret = INST.inst_launcher(self, insts[self.CURRENT_INST[0]])
+				print(str(self.CURRENT_INST)+': '+insts[self.CURRENT_INST])
+				ret = INST.inst_launcher(self, insts[self.CURRENT_INST])
 				if ret:
-					self.render_line(self.CURRENT_INST[0], color=CONST.COLOR_RUNNING)
+					self.render_line(self.CURRENT_INST, color=CONST.COLOR_RUNNING)
 					self.next_inst()
 
 		return ret
@@ -299,14 +299,16 @@ class Node:
 		if port == 'UP':
 			if self.UP.CONT_A == None:
 				ret = True
-		if port == 'RIGHT':
+		elif port == 'RIGHT':
 			if self.RIGHT.CONT_A == None:
 				ret = True
-		if port == 'DOWN': 
+		elif port == 'DOWN': 
 			if self.DOWN.CONT_B == None:
 				ret = True
-		if port == 'LEFT': 
+		elif port == 'LEFT': 
 			if self.LEFT.CONT_B == None:
+				ret = True
+		elif port == 'NIL':
 				ret = True
 
 		print('dest_port_is_empty() -> ',ret)
@@ -318,13 +320,13 @@ class Node:
 		if port=='UP': 
 			if self.UP.CONT_B == None:
 				ret = True
-		if port=='RIGHT': 
+		elif port=='RIGHT': 
 			if self.RIGHT.CONT_B == None:
 				ret = True
-		if port=='DOWN': 
+		elif port=='DOWN': 
 			if self.DOWN.CONT_A == None:
 				ret = True
-		if port=='LEFT': 
+		elif port=='LEFT': 
 			if self.LEFT.CONT_A == None:
 				ret = True
 
@@ -443,11 +445,11 @@ class Node:
 		ret = False
 
 		if i == 0:
-			self.CURRENT_INST[0] = 0
+			self.CURRENT_INST = 0
 		elif i < len(self.text):
-			self.CURRENT_INST[0] = i-1
+			self.CURRENT_INST = i-1
 		else:
-			self.CURRENT_INST[0] = 0
+			self.CURRENT_INST = 0
 			ret = True
 
 		return ret
@@ -458,9 +460,9 @@ class Node:
 		
 		if int(self.ACC) == 0:
 			if i < len(self.text):
-				self.CURRENT_INST[0] = i-1
+				self.CURRENT_INST = i-1
 			else:
-				self.CURRENT_INST[0] = 0
+				self.CURRENT_INST = 0
 			
 			ret = True
 
@@ -472,11 +474,11 @@ class Node:
 		
 		if int(self.ACC) != 0:
 			if i == 0:
-				self.CURRENT_INST[0] = 0
+				self.CURRENT_INST = 0
 			elif i < len(self.text):
-				self.CURRENT_INST[0] = i-1
+				self.CURRENT_INST = i-1
 			else:
-				self.CURRENT_INST[0] = 0
+				self.CURRENT_INST = 0
 
 			ret = True
 
@@ -488,9 +490,9 @@ class Node:
 		
 		if int(self.ACC) > 0:
 			if i < len(self.text):
-				self.CURRENT_INST[0] = i-1
+				self.CURRENT_INST = i-1
 			else:
-				self.CURRENT_INST[0] = 0
+				self.CURRENT_INST = 0
 
 			ret = True
 
@@ -502,9 +504,9 @@ class Node:
 		
 		if int(self.ACC) < 0:
 			if i < len(self.text):
-				self.CURRENT_INST[0] = i-1
+				self.CURRENT_INST = i-1
 			else:
-				self.CURRENT_INST[0] = 0
+				self.CURRENT_INST = 0
 
 			ret = True
 
