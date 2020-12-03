@@ -1,0 +1,57 @@
+{
+	"title": "DATA PIPE",
+	"rules":[
+		"Read the values from IN",
+		"and write them to OUT"
+	],	
+	"io": {
+		"input": {
+			"number": 1,
+			"names": ["IN A"]
+		},
+		"output": {
+			"number": 1,
+			"names": ["OUT A"]
+		}
+	},
+	"input": [
+		[
+			5,
+			10,
+			20,
+			3,
+			76,
+			1,
+			1,
+			22,
+			31,
+			48,
+			22,
+			39
+		]
+	],
+
+	"output": [
+		[
+			5,
+			10,
+			20,
+			3,
+			76,
+			1,
+			1,
+			22,
+			31,
+			48,
+			22,
+			39
+		]
+	],
+
+	"code": [
+		["MOV UP DOWN"],
+		[""],
+		["MOV UP RIGHT"],
+		[""]
+	]
+}

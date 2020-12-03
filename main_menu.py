@@ -8,7 +8,7 @@ screen = pg.display.set_mode((CONST.SCREEN_W, CONST.SCREEN_H))
 
 class MainMenu:
 	def __init__(self):
-		MARGIN = 300
+		MARGIN = 290
 		self.rect = pg.Rect(MARGIN, MARGIN, CONST.SCREEN_W-MARGIN*2, CONST.SCREEN_H-MARGIN*2)
 		self.color_a = CONST.COLOR_ACTIVE
 		self.color_i = CONST.COLOR_INACTIVE

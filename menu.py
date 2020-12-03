@@ -8,7 +8,7 @@ screen = pg.display.set_mode((CONST.SCREEN_W, CONST.SCREEN_H))
 
 class Menu:
 	def __init__(self, demo_mode=True):
-		MARGIN = 300
+		MARGIN = 290
 		self.rect = pg.Rect(MARGIN, MARGIN, CONST.SCREEN_W-MARGIN*2, CONST.SCREEN_H-MARGIN*2)
 		self.color_a = CONST.COLOR_ACTIVE
 		self.color_i = CONST.COLOR_INACTIVE
@@ -20,10 +20,18 @@ class Menu:
 		self.f_names = []
 		problems = self.find_problems()
 		for k in problems.keys():
-			self.text_area.append( CONST.FONT_LG.render(problems[k], 1, self.color_i) )
-			self.text_area[self.menu_index] = CONST.FONT_LG.render(problems[k], 1, self.color_a)
-			self.text.append(problems[k])
-			self.f_names.append(k)
+			if not demo_mode:
+				if 'ERROR' not in problems[k]:
+					self.text_area.append( CONST.FONT_LG.render(problems[k], 1, self.color_i) )
+					self.text_area[self.menu_index] = CONST.FONT_LG.render(problems[k], 1, self.color_a)
+					self.text.append(problems[k])
+					self.f_names.append(k)
+			else:
+				self.text_area.append( CONST.FONT_LG.render(problems[k], 1, self.color_i) )
+				self.text_area[self.menu_index] = CONST.FONT_LG.render(problems[k], 1, self.color_a)
+				self.text.append(problems[k])
+				self.f_names.append(k)
+
 
 		self.demo_mode = demo_mode
 		print('Menu() demo_mode =',self.demo_mode)
