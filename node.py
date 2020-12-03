@@ -37,6 +37,7 @@ class Node:
 
 		self.active = False
 		self.demo_mode = demo_mode
+		print('demo_mode =',self.demo_mode)
 		self.rect = pg.Rect(x, y, w, h)
 		
 		self.color = CONST.COLOR_INACTIVE
@@ -81,9 +82,9 @@ class Node:
 		self.idle_surface = CONST.FONT_SM.render('0%', True, self.color)
 	
 	def get_text(self):
-		if self.demo_mode:
+		if self.demo_mode == True:
 			ret = [i.strip() for i in wrapline(self.text.upper(), CONST.FONT_SM, 800)]
-			return [i.strip() for i in wrapline(self.text.upper(), CONST.FONT_SM, 400)]
+			#return [i.strip() for i in wrapline(self.text.upper(), CONST.FONT_SM, 400)]
 		else:
 			ret = [i.strip() for i in wrapline(self.text.upper(), CONST.FONT_SM, 250)]
 		return ret
@@ -93,16 +94,18 @@ class Node:
 			color = self.color
 
 		aux = self.get_text()
-		#print(aux)
-		aux = self.text.split('\r')
-		#print(aux)
+		
+		if self.demo_mode:
+			aux = self.text.split('\r')
+		print(aux)
 		#print(type(aux), aux)
 		for l in range(len(self.txt_surface)):
 			try:
 				self.txt_surface[l] = CONST.FONT.render(aux[l], 10, color)  
+				#print(aux[l])
 			except IndexError:
 				self.txt_surface[l] = CONST.FONT.render('', 10, color)
-
+			
 		#print(aux)
 		return aux
 
@@ -126,7 +129,7 @@ class Node:
 				self.active = False
 			self.color = CONST.COLOR_ACTIVE if self.active else CONST.COLOR_INACTIVE
 		
-		elif event.type == pg.KEYDOWN and self.active:
+		elif event.type == pg.KEYDOWN and self.active and not self.demo_mode:
 			if event.key == pg.K_RETURN:
 				self.text += event.unicode
 				#print(self.text)
@@ -141,7 +144,7 @@ class Node:
 
 
 	def draw(self, screen):
-		#self.render_text()
+		self.render_text()
 		for i in self.txt_surface:
 			if i == self.CURRENT_INST:
 				self.txt_surface[i] = self.render_line(i, CONST.COLOR_RUNNING)
@@ -208,7 +211,6 @@ class Node:
 
 	def register_tags(self):
 		txt = self.get_text()
-
 		for line in txt:
 			if len(line) > 0:
 				if line[-1] == ':':

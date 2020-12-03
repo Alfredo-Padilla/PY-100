@@ -19,15 +19,16 @@ F_NAMES = (
 )
 
 class Runner:
-	def __init__(self, f_name=None):
+	def __init__(self, f_name=None, demo_mode=False):
 		self.paused = False
 		self.running = False
 		self.error = False
 		if f_name == None:
-			self.p_name = F_NAMES[3]+'.json'
+			self.p_name = F_NAMES[0]+'.json'
 		else:
 			self.p_name = f_name
 		self.speed = 500
+		self.demo_mode = demo_mode
 
 	def reset(self, nodes, ports, io):
 		self.speed = 500
@@ -99,12 +100,13 @@ class Runner:
 
 
 		# NODOS
-		nodo_1_1 = Node(40,  40, 350, 395, demo_mode=True)
-		nodo_1_2 = Node(600, 40, 350, 395, demo_mode=True)
-		nodo_2_1 = Node(40,  470, 350, 395, demo_mode=True)
-		nodo_2_2 = Node(600, 470, 350, 395, demo_mode=True)
+		nodo_1_1 = Node(40,  40, 350, 395, demo_mode=self.demo_mode)
+		nodo_1_2 = Node(600, 40, 350, 395, demo_mode=self.demo_mode)
+		nodo_2_1 = Node(40,  470, 350, 395, demo_mode=self.demo_mode)
+		nodo_2_2 = Node(600, 470, 350, 395, demo_mode=self.demo_mode)
 		nodes = [nodo_1_1, nodo_1_2, nodo_2_1, nodo_2_2]
-		nodes = self.load_code('problems\\'+self.p_name, nodes)
+		if self.demo_mode:
+			nodes = self.load_code('problems\\'+self.p_name, nodes)
 
 		# OPCIONES DE IO
 		io_options = self.load_io('problems\\'+self.p_name)

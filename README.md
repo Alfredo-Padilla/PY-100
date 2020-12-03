@@ -1,2 +1,4 @@
 # PY-100
-Emulador de TIS-100 en python
+TIS - 100 recreated in python
+
+Run main_menu.py to play
